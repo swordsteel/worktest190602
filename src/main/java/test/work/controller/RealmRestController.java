@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 import test.work.model.ErrorMessage;
 import test.work.model.RealmRequest;
 import test.work.service.RealmService;
+import test.work.service.TokenService;
 
 @RestController
 @RequestMapping("/service/user/realm")
@@ -20,6 +21,8 @@ public class RealmRestController {
 
     @Autowired
     private RealmService realmService;
+    @Autowired
+    private TokenService tokenService;
 
     @GetMapping("/{requestId}")
     @ResponseBody
