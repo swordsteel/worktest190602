@@ -1,6 +1,7 @@
 package test.work.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -10,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
+import test.work.entity.Realm;
 import test.work.model.ErrorMessage;
 import test.work.model.RealmRequest;
 import test.work.service.RealmService;
@@ -41,7 +43,14 @@ public class RealmRestController {
         if(realmRequest.getName() == null || realmRequest.getName().isEmpty()) {
             return new ResponseEntity(new ErrorMessage("InvalidRealmName"), HttpStatus.BAD_REQUEST);
         }
-        return new ResponseEntity("Post Response", HttpStatus.OK);
+        try {
+            Realm realm = new Realm(realmRequest.getName(), tokenService.get() ,realmRequest.getDescription());
+            realmService.save(realm);
+            return new ResponseEntity(realm, HttpStatus.OK);
+        }
+        catch (DataIntegrityViolationException e) {
+            return new ResponseEntity(new ErrorMessage("DuplicateRealmName"), HttpStatus.BAD_REQUEST);
+        }
     }
 
 }
