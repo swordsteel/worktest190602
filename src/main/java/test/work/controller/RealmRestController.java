@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import test.work.entity.Realm;
+import test.work.exception.NotFoundException;
 import test.work.model.ErrorMessage;
 import test.work.model.RealmRequest;
 import test.work.service.RealmService;
@@ -30,10 +31,13 @@ public class RealmRestController {
     @ResponseBody
     public ResponseEntity<?> getRealm(@PathVariable String requestId) {
         try {
-            int id = Integer.parseInt(requestId);
-            return new ResponseEntity<>("Get Respons", HttpStatus.OK);
-        } catch(NumberFormatException e) {
+            return new ResponseEntity<>(realmService.get(Integer.parseInt(requestId)), HttpStatus.OK);
+        }
+        catch(NumberFormatException e) {
             return new ResponseEntity(new ErrorMessage("InvalidArgument"), HttpStatus.BAD_REQUEST);
+        }
+        catch(NotFoundException e) {
+            return new ResponseEntity(new ErrorMessage("RealmNotFound"), HttpStatus.BAD_REQUEST);
         }
     }
 
